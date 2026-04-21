@@ -9,6 +9,7 @@ set -euo pipefail
 #   CODEX_CHRONICLE_VERSION  — git ref to install. Default: main.
 #   CODEX_CHRONICLE_HOME     — data + managed source root. Default: $HOME/.codex-chronicle.
 #   CODEX_HOME               — Codex CLI config root. Default: $HOME/.codex.
+#   CODEX_CHRONICLE_REPO_URL — git repository to clone. Default: GitHub origin.
 
 REPO_SLUG="Sakib-Sobaha/codex-precisely"
 CODEX_CHRONICLE_HOME="${CODEX_CHRONICLE_HOME:-$HOME/.codex-chronicle}"
@@ -16,8 +17,23 @@ CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 BIN_DIR="$HOME/.local/bin"
 SRC_DIR="$CODEX_CHRONICLE_HOME/src"
 REF="${CODEX_CHRONICLE_VERSION:-main}"
-REPO_URL="https://github.com/$REPO_SLUG.git"
+REPO_URL="${CODEX_CHRONICLE_REPO_URL:-https://github.com/$REPO_SLUG.git}"
 HOOKS_FILE="$CODEX_HOME/hooks.json"
+TMP_SRC="$CODEX_CHRONICLE_HOME/src.new"
+OLD_SRC="$CODEX_CHRONICLE_HOME/src.old"
+
+cleanup() {
+    rm -rf "$TMP_SRC"
+}
+
+restore_previous_install() {
+    rm -rf "$SRC_DIR"
+    if [ -d "$OLD_SRC" ]; then
+        mv "$OLD_SRC" "$SRC_DIR"
+    fi
+}
+
+trap cleanup EXIT
 
 echo "Installing Codex Chronicle..."
 echo ""
@@ -58,27 +74,40 @@ echo "Ref:      $REF"
 echo "Codex:    $(command -v codex)"
 
 mkdir -p "$BIN_DIR" "$CODEX_CHRONICLE_HOME" "$CODEX_HOME"
-
-TMP_SRC="$CODEX_CHRONICLE_HOME/src.new"
-OLD_SRC="$CODEX_CHRONICLE_HOME/src.old"
 rm -rf "$TMP_SRC" "$OLD_SRC"
 
 echo "Cloning repository..."
-git clone --depth 1 --branch "$REF" "$REPO_URL" "$TMP_SRC/repo"
+if ! git clone --depth 1 --branch "$REF" "$REPO_URL" "$TMP_SRC/repo"; then
+    echo "ERROR: failed to clone $REPO_URL at ref $REF"
+    exit 1
+fi
 
-echo "Creating virtual environment..."
-python3 -m venv "$TMP_SRC/venv"
-
-echo "Installing package..."
-"$TMP_SRC/venv/bin/pip" install --upgrade pip >/dev/null
-"$TMP_SRC/venv/bin/pip" install -e "$TMP_SRC/repo/codex"
-
-rm -f "$BIN_DIR/codex-chronicle" "$BIN_DIR/codex-chronicle-hook"
 if [ -d "$SRC_DIR" ]; then
     mv "$SRC_DIR" "$OLD_SRC"
 fi
 mv "$TMP_SRC" "$SRC_DIR"
+
+echo "Creating virtual environment..."
+if ! python3 -m venv "$SRC_DIR/venv"; then
+    echo "ERROR: failed to create virtual environment in $SRC_DIR/venv"
+    restore_previous_install
+    exit 1
+fi
+
+echo "Installing package..."
+if ! "$SRC_DIR/venv/bin/pip" install --upgrade pip >/dev/null; then
+    echo "ERROR: failed to upgrade pip in $SRC_DIR/venv"
+    restore_previous_install
+    exit 1
+fi
+if ! "$SRC_DIR/venv/bin/pip" install -e "$SRC_DIR/repo/codex"; then
+    echo "ERROR: failed to install codex-chronicle from $SRC_DIR/repo/codex"
+    restore_previous_install
+    exit 1
+fi
+
 rm -rf "$OLD_SRC"
+rm -f "$BIN_DIR/codex-chronicle" "$BIN_DIR/codex-chronicle-hook"
 
 ln -sf "$SRC_DIR/venv/bin/codex-chronicle" "$BIN_DIR/codex-chronicle"
 ln -sf "$SRC_DIR/venv/bin/codex-chronicle-hook" "$BIN_DIR/codex-chronicle-hook"
