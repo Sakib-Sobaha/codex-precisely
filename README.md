@@ -7,7 +7,7 @@ Codex Chronicle records past Codex work and makes it queryable across sessions. 
 Install from GitHub with:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Sakib-Sobaha/codex-precisely/main/codex/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Sakib-Sobaha/codex-precisely/main/install.sh | bash
 ```
 
 This installer:
