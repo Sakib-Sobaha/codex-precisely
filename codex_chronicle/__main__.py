@@ -177,7 +177,7 @@ def uninstall_daemon():
 
 def update_install():
     import subprocess
-    url = "https://raw.githubusercontent.com/ehzawad/CodexPrecisely/main/codex/install.sh"
+    url = "https://raw.githubusercontent.com/Sakib-Sobaha/codex-precisely/main/install.sh"
     rc = subprocess.call(f"curl -fsSL {url} | bash", shell=True)
     sys.exit(rc)
 

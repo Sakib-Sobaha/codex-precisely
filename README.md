@@ -12,7 +12,7 @@ curl -fsSL https://raw.githubusercontent.com/Sakib-Sobaha/codex-precisely/main/i
 
 This installer:
 
-- downloads the latest release for `darwin-arm64` or `linux-x86_64`
+- clones the repository into `~/.codex-chronicle/src`
 - installs `codex-chronicle` and `codex-chronicle-hook` into `~/.local/bin`
 - configures Codex hooks in `~/.codex/hooks.json`
 - enables `features.codex_hooks = true` in `~/.codex/config.toml`
