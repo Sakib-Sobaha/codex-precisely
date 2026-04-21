@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Codex Chronicle installer — downloads a prebuilt binary release.
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/ehzawad/CodexPrecisely/main/codex/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/Sakib-Sobaha/codex-precisely/main/codex/install.sh | bash
 #
 # Environment overrides (for testing / pinning):
 #   CODEX_CHRONICLE_VERSION  — git tag, e.g. vX.Y.Z. Default: latest release.
@@ -11,7 +11,7 @@ set -euo pipefail
 #   CODEX_CHRONICLE_HOME     — data + runtime root. Default: $HOME/.codex-chronicle.
 #   CODEX_HOME               — Codex CLI config root. Default: $HOME/.codex.
 
-REPO_SLUG="ehzawad/CodexPrecisely"
+REPO_SLUG="Sakib-Sobaha/codex-precisely"
 CODEX_CHRONICLE_HOME="${CODEX_CHRONICLE_HOME:-$HOME/.codex-chronicle}"
 CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 BIN_DIR="$HOME/.local/bin"
@@ -33,7 +33,7 @@ case "$OS/$ARCH" in
     Linux/x86_64)       TARGET="linux-x86_64" ;;
     Darwin/x86_64)
         echo "ERROR: macOS Intel is not a prebuilt target yet."
-        echo "  Build locally: git clone git@github.com:$REPO_SLUG.git && cd CodexPrecisely/codex && pip install pyinstaller -e . && pyinstaller --name codex-chronicle --onedir --clean --noupx codex_chronicle/_entrypoint.py"
+        echo "  Build locally: git clone git@github.com:$REPO_SLUG.git && cd codex-precisely/codex && pip install pyinstaller -e . && pyinstaller --name codex-chronicle --onedir --clean --noupx codex_chronicle/_entrypoint.py"
         exit 1
         ;;
     Linux/aarch64|Linux/arm64)
