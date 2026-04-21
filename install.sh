@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # Codex Chronicle installer — downloads a prebuilt binary release.
-# Usage:
-#   curl -fsSL https://raw.githubusercontent.com/Sakib-Sobaha/codex-precisely/main/codex/install.sh | bash
+# This script is for the release-binary path. End users should use the
+# repository root installer instead:
+#   curl -fsSL https://raw.githubusercontent.com/Sakib-Sobaha/codex-precisely/main/install.sh | bash
 #
 # Environment overrides (for testing / pinning):
 #   CODEX_CHRONICLE_VERSION  — git tag, e.g. vX.Y.Z. Default: latest release.
